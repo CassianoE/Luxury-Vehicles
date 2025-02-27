@@ -84,5 +84,13 @@ public class BoatController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
-
+    @GetMapping("/findByLengthGreaterThanEqual")
+    public  ResponseEntity<List<Boat>> findByLengthGreaterThanEqual(@PathVariable int length) {
+        try {
+            List<Boat> boatList = this.boatService.findByLengthGreaterThanEqual(length);
+            return new ResponseEntity<>(boatList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
 }

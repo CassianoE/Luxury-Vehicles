@@ -1,6 +1,7 @@
 package app.controller;
 
 
+import app.entity.Boat;
 import app.entity.Car;
 import app.service.CarService;
 import jakarta.validation.Valid;
@@ -65,6 +66,26 @@ public class CarController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/findByModel/{model}")
+    public ResponseEntity<List<Car>> findByModel(@PathVariable String model) {
+        try {
+            List<Car> carList = carService.findByModel(model);
+            return new ResponseEntity<>(carList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/findByFuelType/{fuelType}")
+    public ResponseEntity<List<Car>> findByFuelType(@PathVariable String fuelType) {
+        try {
+            List<Car> carList = carService.findByFuelType(fuelType);
+            return new ResponseEntity<>(carList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 

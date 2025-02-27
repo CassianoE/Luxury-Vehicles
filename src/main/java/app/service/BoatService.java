@@ -91,4 +91,8 @@ public class BoatService {
     public List<Boat> findByYear(int  year) {
         return this.boatRepository.findByYear(year);
     }
+
+    public List<Boat> findByLengthGreaterThanEqual(int length) {
+        return this.boatRepository.findByLengthGreaterThanEqual(length);
+    }
 }

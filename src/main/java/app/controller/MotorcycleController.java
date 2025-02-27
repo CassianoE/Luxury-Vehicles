@@ -66,4 +66,24 @@ public class MotorcycleController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/findByModel/{model}")
+    public ResponseEntity<List<Motorcycle>> findByModel(@PathVariable String model) {
+        try {
+            List<Motorcycle> motorcycleList = motorcycleService.findByModel(model);
+            return new ResponseEntity<>(motorcycleList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/findByBikeType/{bikeType}")
+    public ResponseEntity<List<Motorcycle>> findByBikeType(@PathVariable String bikeType) {
+        try {
+            List<Motorcycle> motorcycleList = motorcycleService.findByBikeType(bikeType);
+            return new ResponseEntity<>(motorcycleList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
 }

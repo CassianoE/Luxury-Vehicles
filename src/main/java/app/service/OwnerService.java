@@ -60,4 +60,12 @@ public class OwnerService {
             throw new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + id);
         }
     }
+
+    public List<Owner> findByNameIgnoreCaseContaining(String name) {
+        return this.ownerRepository.findByNameIgnoreCaseContaining(name);
+    }
+
+    public List<Owner> findByEmailIgnoreCase(String email) {
+        return this.ownerRepository.findByEmailIgnoreCase(email);
+    }
 }

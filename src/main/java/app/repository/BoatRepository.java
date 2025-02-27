@@ -10,6 +10,8 @@ public interface  BoatRepository extends JpaRepository<Boat, Long> {
 
    public List<Boat> findByModel(String model);
 
+   public List<Boat> findByLengthGreaterThanEqual(int length);
+
    @Query("FROM Boat b WHERE b.year >:year")
    public List<Boat> findByYear(int year);
 

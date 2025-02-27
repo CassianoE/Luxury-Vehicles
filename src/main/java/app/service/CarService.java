@@ -1,5 +1,6 @@
 package app.service;
 
+import app.entity.Boat;
 import app.entity.Car;
 import app.entity.Owner;
 import app.messages.ErrorMessages;
@@ -61,5 +62,13 @@ import java.util.Optional;
         } else {
             throw new RuntimeException(ErrorMessages.CAR_NOT_FOUND + id);
         }
+    }
+
+    public List<Car> findByModel(String model) {
+        return this.carRepository.findByModel(model);
+    }
+
+    public List<Car> findByFuelType(String fuelType) {
+        return this.carRepository.findByFuelType(fuelType);
     }
 }

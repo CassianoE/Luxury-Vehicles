@@ -66,4 +66,24 @@ public class PlaneController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/findByModel/{model}")
+    public ResponseEntity<List<Plane>> findByModel(@PathVariable String model) {
+        try {
+            List<Plane> planeList = planeService.findByModel(model);
+            return new ResponseEntity<>(planeList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/findByEngineCount/{engineCount}")
+    public ResponseEntity<List<Plane>> findByEngineCount(@PathVariable String engineCount) {
+        try {
+            List<Plane> planeList = planeService.findByEngineCount(engineCount);
+            return new ResponseEntity<>(planeList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
 }

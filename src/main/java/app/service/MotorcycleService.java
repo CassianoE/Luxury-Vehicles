@@ -62,4 +62,12 @@ public class MotorcycleService {
             throw new RuntimeException(ErrorMessages.MOTORCYCLE_NOT_FOUND + id);
         }
     }
+
+    public List<Motorcycle> findByModel(String model) {
+        return this.motorcycleRepository.findByModel(model);
+    }
+
+    public List<Motorcycle> findByBikeType(String bikeType) {
+        return this.motorcycleRepository.findByBikeType(bikeType);
+    }
 }

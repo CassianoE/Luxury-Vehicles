@@ -66,4 +66,23 @@ public class OwnerController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/findByNameIgnoreCaseContaining/{name}")
+    public ResponseEntity<List<Owner>> findByNameIgnoreCaseContaining(@PathVariable String name) {
+        try {
+            List<Owner> ownerList = ownerService.findByNameIgnoreCaseContaining(name);
+            return new ResponseEntity<>(ownerList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/findByEmailIgnoreCase/{email}")
+    public ResponseEntity<List<Owner>> findByEmailIgnoreCase(@PathVariable String email) {
+        try {
+            List<Owner> ownerList = ownerService.findByEmailIgnoreCase(email);
+            return new ResponseEntity<>(ownerList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
 }

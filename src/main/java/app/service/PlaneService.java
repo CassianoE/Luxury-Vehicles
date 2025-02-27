@@ -62,4 +62,12 @@ public class PlaneService {
             throw new RuntimeException(ErrorMessages.PLANE_NOT_FOUND + id);
         }
     }
+
+    public List<Plane> findByModel(String model) {
+        return this.planeRepository.findByModel(model);
+    }
+
+    public List<Plane> findByEngineCount(String engineCount) {
+        return this.planeRepository.findByEngineCount(engineCount);
+    }
 }
