@@ -1,8 +1,10 @@
 package app.service;
 
 import app.entity.Boat;
+import app.entity.Owner;
 import app.messages.ErrorMessages;
 import app.repository.BoatRepository;
+import app.repository.OwnerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +17,15 @@ public class BoatService {
     @Autowired
     private BoatRepository boatRepository;
 
+    @Autowired
+    private OwnerRepository ownerRepository;
+
     public Boat save(Boat boat) {
+        if (boat.getOwner() != null && boat.getOwner().getId() != null) {
+            Owner ownerFromDb = ownerRepository.findById(boat.getOwner().getId())
+                    .orElseThrow(() -> new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + boat.getOwner().getId()));
+            boat.setOwner(ownerFromDb);
+        }
         return boatRepository.save(boat);
     }
 

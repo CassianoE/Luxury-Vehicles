@@ -1,8 +1,10 @@
 package app.service;
 
 import app.entity.Motorcycle;
+import app.entity.Owner;
 import app.messages.ErrorMessages;
 import app.repository.MotorcycleRepository;
+import app.repository.OwnerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +17,15 @@ public class MotorcycleService {
     @Autowired
     private MotorcycleRepository motorcycleRepository;
 
+    @Autowired
+    private OwnerRepository ownerRepository;
+
     public Motorcycle save(Motorcycle motorcycle) {
+        if (motorcycle.getOwner() != null && motorcycle.getOwner().getId() != null) {
+            Owner ownerFromDb = ownerRepository.findById(motorcycle.getOwner().getId())
+                    .orElseThrow(() -> new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + motorcycle.getOwner().getId()));
+            motorcycle.setOwner(ownerFromDb);
+        }
         return motorcycleRepository.save(motorcycle);
     }
 

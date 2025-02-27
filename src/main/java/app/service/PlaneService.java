@@ -1,7 +1,9 @@
 package app.service;
 
+import app.entity.Owner;
 import app.entity.Plane;
 import app.messages.ErrorMessages;
+import app.repository.OwnerRepository;
 import app.repository.PlaneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +17,15 @@ public class PlaneService {
     @Autowired
     private PlaneRepository planeRepository;
 
+    @Autowired
+    private OwnerRepository ownerRepository;
+
     public Plane save(Plane plane) {
+        if (plane.getOwner() != null && plane.getOwner().getId() != null) {
+            Owner ownerFromDb = ownerRepository.findById(plane.getOwner().getId())
+                    .orElseThrow(() -> new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + plane.getOwner().getId()));
+            plane.setOwner(ownerFromDb);
+        }
         return planeRepository.save(plane);
     }
 

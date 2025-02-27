@@ -1,5 +1,6 @@
 package app.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -39,8 +40,9 @@ public class Motorcycle {
     @NotBlank(message = "O tipo de moto não pode ser vazio")
     private String bikeType; // Tipo de moto (ex.: Esportiva, Naked, Touring)
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id")
     @NotNull(message = "O proprietário não pode ser nulo")
+    @JsonIgnoreProperties({"cars", "motorcycles", "boats", "planes"}) // Ignorar a relação com a entidade Owner, evitando um loop infinito na serialização JSON
     private Owner owner;
 }

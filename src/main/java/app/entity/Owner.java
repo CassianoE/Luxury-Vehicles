@@ -1,5 +1,6 @@
 package app.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -39,14 +40,18 @@ public class Owner {
     private String phone;
 
     @OneToMany(mappedBy = "owner")
+    @JsonIgnoreProperties("owner")
     private List<Car> cars;
 
     @OneToMany(mappedBy = "owner")
+    @JsonIgnoreProperties("owner")
     private List<Motorcycle> motorcycles;
 
     @OneToMany(mappedBy = "owner")
+    @JsonIgnoreProperties("owner")
     private List<Plane> planes;
 
     @OneToMany(mappedBy = "owner")
+    @JsonIgnoreProperties("owner")
     private List<Boat> boats;
 }
