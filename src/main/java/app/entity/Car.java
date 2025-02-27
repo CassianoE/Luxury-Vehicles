@@ -1,10 +1,7 @@
 package app.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,5 +40,6 @@ public class Car {
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
+    @NotNull(message = "O proprietário não pode ser nulo")
     private Owner owner;
 }
