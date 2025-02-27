@@ -54,4 +54,8 @@ public class Owner {
     @OneToMany(mappedBy = "owner")
     @JsonIgnoreProperties("owner")
     private List<Boat> boats;
+
+    private String statusRegister;
+
+
 }

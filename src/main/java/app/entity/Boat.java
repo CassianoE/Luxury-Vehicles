@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -46,4 +48,7 @@ public class Boat {
     @NotNull(message = "O proprietário não pode ser nulo")
     @JsonIgnoreProperties({"cars", "motorcycles", "boats", "planes"}) // Ignorar a relação com a entidade Owner, evitando um loop infinito na serialização JSON
     private Owner owner;
+
+    @NotNull(message = "A data de registro não pode ser nula")
+    private LocalDate registrationDate; // Nova coluna para a data de registro
 }

@@ -16,6 +16,17 @@ public class OwnerService {
     private OwnerRepository ownerRepository;
 
     public Owner save(Owner owner) {
+
+        boolean isIncomplete = false;
+
+        if (owner.getPhone() == null || owner.getPhone().isEmpty() ||
+            owner.getCpf() == null || owner.getCpf().isEmpty() ||
+            owner.getName() == null || owner.getName().isEmpty()) {
+            isIncomplete = true;
+        }
+
+        owner.setStatusRegister(isIncomplete ? "INCOMPLETO" : "COMPLETO");
+
         return ownerRepository.save(owner);
     }
 
