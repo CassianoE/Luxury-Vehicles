@@ -66,4 +66,23 @@ public class BoatController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+    @GetMapping("/findByModel/{model}")
+    public ResponseEntity<List<Boat>> findByModel(@PathVariable String model) {
+        try {
+            List<Boat> boatList = boatService.findByModel(model);
+            return new ResponseEntity<>(boatList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/findByYear")
+    public ResponseEntity<List<Boat>> findByYear(@PathVariable int year) {
+        try {
+            List<Boat> boatList = this.boatService.findByYear(year);
+            return new ResponseEntity<>(boatList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

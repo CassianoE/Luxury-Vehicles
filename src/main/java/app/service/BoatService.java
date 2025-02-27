@@ -83,4 +83,12 @@ public class BoatService {
             throw new RuntimeException(ErrorMessages.BOAT_NOT_FOUND + id);
         }
     }
+
+    public List<Boat> findByModel(String model) {
+       return this.boatRepository.findByModel(model);
+    }
+
+    public List<Boat> findByYear(int  year) {
+        return this.boatRepository.findByYear(year);
+    }
 }
