@@ -2,6 +2,8 @@ package app.messages;
 
 public final class ErrorMessages {
 
+
+
     // Construtor privado para evitar instanciação
     private ErrorMessages() {
         throw new AssertionError("Utility class cannot be instantiated");
@@ -12,4 +14,5 @@ public final class ErrorMessages {
     public static final String PLANE_NOT_FOUND = "Plane not found with ID: ";
     public static final String BOAT_NOT_FOUND = "Boat not found with ID: ";
     public static final String OWNER_NOT_FOUND = "Owner not found with ID: ";
+    public static final String EVENT_NOT_FOUND = "Event not found with ID: ";
 }

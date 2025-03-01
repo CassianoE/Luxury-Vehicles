@@ -67,8 +67,8 @@ public class MotorcycleController {
         }
     }
 
-    @GetMapping("/findByModel/{model}")
-    public ResponseEntity<List<Motorcycle>> findByModel(@PathVariable String model) {
+    @GetMapping("/findByModel")
+    public ResponseEntity<List<Motorcycle>> findByModel(@RequestParam String model) {
         try {
             List<Motorcycle> motorcycleList = motorcycleService.findByModel(model);
             return new ResponseEntity<>(motorcycleList, HttpStatus.OK);
@@ -77,8 +77,8 @@ public class MotorcycleController {
         }
     }
 
-    @GetMapping("/findByBikeType/{bikeType}")
-    public ResponseEntity<List<Motorcycle>> findByBikeType(@PathVariable String bikeType) {
+    @GetMapping("/findByBikeType")
+    public ResponseEntity<List<Motorcycle>> findByBikeType(@RequestParam String bikeType) {
         try {
             List<Motorcycle> motorcycleList = motorcycleService.findByBikeType(bikeType);
             return new ResponseEntity<>(motorcycleList, HttpStatus.OK);

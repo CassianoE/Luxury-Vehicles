@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -44,4 +46,5 @@ public class Car {
     @NotNull(message = "O proprietário não pode ser nulo")
     @JsonIgnoreProperties({"cars", "motorcycles", "boats", "planes"}) // Ignorar a relação com a entidade Owner, evitando um loop infinito na serialização JSON
     private Owner owner;
+
 }

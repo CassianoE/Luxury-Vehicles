@@ -69,8 +69,8 @@ public class CarController {
         }
     }
 
-    @GetMapping("/findByModel/{model}")
-    public ResponseEntity<List<Car>> findByModel(@PathVariable String model) {
+    @GetMapping("/findByModel")
+    public ResponseEntity<List<Car>> findByModel(@RequestParam String model) {
         try {
             List<Car> carList = carService.findByModel(model);
             return new ResponseEntity<>(carList, HttpStatus.OK);
@@ -79,15 +79,16 @@ public class CarController {
         }
     }
 
-    @GetMapping("/findByFuelType/{fuelType}")
-    public ResponseEntity<List<Car>> findByFuelType(@PathVariable String fuelType) {
+    @GetMapping("/findByFuelType")
+    public ResponseEntity<List<Car>> findByFuelType(@RequestParam String fuelType) {
         try {
             List<Car> carList = carService.findByFuelType(fuelType);
             return new ResponseEntity<>(carList, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }  catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
     }
 
 
-}
+

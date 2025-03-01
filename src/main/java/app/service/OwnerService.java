@@ -61,11 +61,28 @@ public class OwnerService {
         }
     }
 
-    public List<Owner> findByNameIgnoreCaseContaining(String name) {
-        return this.ownerRepository.findByNameIgnoreCaseContaining(name);
+    public List<Owner> findByName(String name) {
+        List <Owner> ownerList = ownerRepository.findByName(name);
+        if (ownerList.isEmpty()) {
+            throw new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + name);
+        }
+        return this.ownerRepository.findByName(name);
     }
 
-    public List<Owner> findByEmailIgnoreCase(String email) {
-        return this.ownerRepository.findByEmailIgnoreCase(email);
+    public List<Owner> findByEmail(String email) {
+        List <Owner> ownerList = ownerRepository.findByEmail(email);
+        if (ownerList.isEmpty()) {
+            throw new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + email);
+        }
+        return this.ownerRepository.findByEmail(email);
     }
+
+    public Owner findByCpf(String cpf) {
+        return ownerRepository.findByCpf(cpf)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + cpf));
+    }
+
+
 }

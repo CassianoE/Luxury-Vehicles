@@ -64,10 +64,18 @@ public class MotorcycleService {
     }
 
     public List<Motorcycle> findByModel(String model) {
+        List <Motorcycle> motorcycleList = motorcycleRepository.findByModel(model);
+        if (motorcycleList.isEmpty()) {
+            throw new RuntimeException(ErrorMessages.MOTORCYCLE_NOT_FOUND + model);
+        }
         return this.motorcycleRepository.findByModel(model);
     }
 
     public List<Motorcycle> findByBikeType(String bikeType) {
+        List <Motorcycle> motorcycleList = motorcycleRepository.findByBikeType(bikeType);
+        if (motorcycleList.isEmpty()) {
+            throw new RuntimeException(ErrorMessages.MOTORCYCLE_NOT_FOUND + bikeType);
+        }
         return this.motorcycleRepository.findByBikeType(bikeType);
     }
 }

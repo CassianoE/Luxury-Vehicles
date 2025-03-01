@@ -64,10 +64,18 @@ public class PlaneService {
     }
 
     public List<Plane> findByModel(String model) {
+        List <Plane> planeList = planeRepository.findByModel(model);
+        if (planeList.isEmpty()) {
+            throw new RuntimeException(ErrorMessages.PLANE_NOT_FOUND + model);
+        }
         return this.planeRepository.findByModel(model);
     }
 
-    public List<Plane> findByEngineCount(String engineCount) {
+    public List<Plane> findByEngineCount(int engineCount) {
+        List <Plane> planeList = planeRepository.findByEngineCount(engineCount);
+        if (planeList.isEmpty()) {
+            throw new RuntimeException(ErrorMessages.PLANE_NOT_FOUND + engineCount);
+        }
         return this.planeRepository.findByEngineCount(engineCount);
     }
 }

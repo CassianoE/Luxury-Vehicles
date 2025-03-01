@@ -65,10 +65,20 @@ import java.util.Optional;
     }
 
     public List<Car> findByModel(String model) {
+        List <Car> carList = carRepository.findByModel(model);
+        if (carList.isEmpty()) {
+            throw new RuntimeException("Nenhum carro encontrado com o modelo: " + model);
+        }
         return this.carRepository.findByModel(model);
     }
 
     public List<Car> findByFuelType(String fuelType) {
-        return this.carRepository.findByFuelType(fuelType);
+        List<Car> carList = carRepository.findByFuelType(fuelType);
+
+        if (carList.isEmpty()) {
+            throw new RuntimeException("Nenhum carro encontrado com o tipo de combustível: " + fuelType);
+        }
+
+        return carList;
     }
 }

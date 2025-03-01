@@ -55,6 +55,7 @@ public class Owner {
     @JsonIgnoreProperties("owner")
     private List<Boat> boats;
 
+
     private String statusRegister;
 
 

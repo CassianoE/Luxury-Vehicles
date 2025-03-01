@@ -8,8 +8,6 @@ import app.repository.OwnerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,25 +26,6 @@ public class BoatService {
                     .orElseThrow(() -> new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + boat.getOwner().getId()));
             boat.setOwner(ownerFromDb);
         }
-
-        if (boat.getLength() <= 10) {
-            throw new RuntimeException("Não é possível cadastrar barco com comprimento menor ou igual a 10 metros");
-        }
-
-        if ("Jorge".equals(boat.getOwner().getName())) {
-           throw new RuntimeException("Não é possível cadastrar barco para o proprietário Jorge");
-        }
-
-        if ("Catamarã".equals(boat.getHullType()) && (boat.getPrice() < 50000 || boat.getPrice() > 200000)) {
-            throw new RuntimeException("Barcos do tipo Catamarã devem ter um preço entre 50.000 e 200.000");
-        }
-
-        LocalDate now = LocalDate.now();
-        long daysBetween = ChronoUnit.DAYS.between(boat.getRegistrationDate(), now);
-        if (daysBetween > 30) {
-            throw new RuntimeException("A data de registro do barco não pode ser superior a 30 dias a partir da data atual");
-        }
-
         return boatRepository.save(boat);
     }
 
@@ -85,14 +64,26 @@ public class BoatService {
     }
 
     public List<Boat> findByModel(String model) {
-       return this.boatRepository.findByModel(model);
+    List <Boat> boatList = boatRepository.findByModel(model);
+    if (boatList.isEmpty()) {
+        throw new RuntimeException(ErrorMessages.BOAT_NOT_FOUND + model);
+    }
+        return this.boatRepository.findByModel(model);
     }
 
-    public List<Boat> findByYear(int  year) {
-        return this.boatRepository.findByYear(year);
+    public List<Boat> findByYear(int year) {
+        List<Boat> boatList = boatRepository.findByYear(year);
+        if (boatList.isEmpty()) {
+            throw new RuntimeException("Nenhum barco encontrado para o ano " + year);
+        }
+        return boatList;
     }
 
     public List<Boat> findByLengthGreaterThanEqual(int length) {
+        List <Boat> boatList = boatRepository.findByLengthGreaterThanEqual(length);
+        if (boatList.isEmpty()) {
+            throw new RuntimeException(ErrorMessages.BOAT_NOT_FOUND + length);
+        }
         return this.boatRepository.findByLengthGreaterThanEqual(length);
     }
 }

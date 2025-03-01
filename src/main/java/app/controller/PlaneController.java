@@ -67,8 +67,8 @@ public class PlaneController {
         }
     }
 
-    @GetMapping("/findByModel/{model}")
-    public ResponseEntity<List<Plane>> findByModel(@PathVariable String model) {
+    @GetMapping("/findByModel")
+    public ResponseEntity<List<Plane>> findByModel(@RequestParam String model) {
         try {
             List<Plane> planeList = planeService.findByModel(model);
             return new ResponseEntity<>(planeList, HttpStatus.OK);
@@ -77,8 +77,8 @@ public class PlaneController {
         }
     }
 
-    @GetMapping("/findByEngineCount/{engineCount}")
-    public ResponseEntity<List<Plane>> findByEngineCount(@PathVariable String engineCount) {
+    @GetMapping("/findByEngineCount")
+    public ResponseEntity<List<Plane>> findByEngineCount(@RequestParam int engineCount) {
         try {
             List<Plane> planeList = planeService.findByEngineCount(engineCount);
             return new ResponseEntity<>(planeList, HttpStatus.OK);

@@ -14,6 +14,7 @@ import java.util.List;
 @RequestMapping("/api/owners")
 public class OwnerController {
 
+
     @Autowired
     private OwnerService ownerService;
 
@@ -67,22 +68,34 @@ public class OwnerController {
         }
     }
 
-    @GetMapping("/findByNameIgnoreCaseContaining/{name}")
-    public ResponseEntity<List<Owner>> findByNameIgnoreCaseContaining(@PathVariable String name) {
+
+    @GetMapping("/findByName")
+    public ResponseEntity<List<Owner>> findByName(@RequestParam String name) {
         try {
-            List<Owner> ownerList = ownerService.findByNameIgnoreCaseContaining(name);
+            List<Owner> ownerList = ownerService.findByName(name);
             return new ResponseEntity<>(ownerList, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @GetMapping("/findByEmailIgnoreCase/{email}")
-    public ResponseEntity<List<Owner>> findByEmailIgnoreCase(@PathVariable String email) {
+
+    @GetMapping("/findByEmail")
+    public ResponseEntity<List<Owner>> findByEmail(@RequestParam String email) {
         try {
-            List<Owner> ownerList = ownerService.findByEmailIgnoreCase(email);
-            return new ResponseEntity<>(ownerList, HttpStatus.OK);
+            List<Owner> ownerList = ownerService.findByEmail(email);
+                return new ResponseEntity<>(ownerList, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/findByCpf/{cpf}")
+    public ResponseEntity<Owner> findByCpf(@PathVariable String cpf) {
+        try {
+            Owner owner = ownerService.findByCpf(cpf);
+            return new ResponseEntity<>(owner, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 }

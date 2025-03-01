@@ -66,8 +66,8 @@ public class BoatController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    @GetMapping("/findByModel/{model}")
-    public ResponseEntity<List<Boat>> findByModel(@PathVariable String model) {
+    @GetMapping("/findByModel")
+    public ResponseEntity<List<Boat>> findByModel(@RequestParam String model) {
         try {
             List<Boat> boatList = boatService.findByModel(model);
             return new ResponseEntity<>(boatList, HttpStatus.OK);
@@ -76,16 +76,18 @@ public class BoatController {
         }
     }
     @GetMapping("/findByYear")
-    public ResponseEntity<List<Boat>> findByYear(@PathVariable int year) {
+    public ResponseEntity<List<Boat>> findByYear(@RequestParam int year) {
         try {
-            List<Boat> boatList = this.boatService.findByYear(year);
-            return new ResponseEntity<>(boatList, HttpStatus.OK);
+            List<Boat> boatList = boatService.findByYear(year);
+            return ResponseEntity.ok(boatList);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
     @GetMapping("/findByLengthGreaterThanEqual")
-    public  ResponseEntity<List<Boat>> findByLengthGreaterThanEqual(@PathVariable int length) {
+    public  ResponseEntity<List<Boat>> findByLengthGreaterThanEqual(@RequestParam int length) {
         try {
             List<Boat> boatList = this.boatService.findByLengthGreaterThanEqual(length);
             return new ResponseEntity<>(boatList, HttpStatus.OK);
