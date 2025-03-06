@@ -10,6 +10,15 @@ import java.util.Optional;
 
 public interface OwnerRepository extends JpaRepository<Owner, Long> {
 
+
+
+        boolean existsByCpf(String cpf);
+
+        boolean existsByEmail(String email);
+
+        boolean existsByPhone(String phone);
+
+
     List<Owner> findByName(String name);
     List<Owner> findByEmail(String email);
 

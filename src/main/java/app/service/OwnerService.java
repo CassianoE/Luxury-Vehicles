@@ -19,27 +19,32 @@ public class OwnerService {
 
     public String save(Owner owner) {
 
-        boolean isIncomplete = false;
-
-        //  Remove caracteres não numéricos do CPF
+        //  Remove caracteres especiais do CPF antes de validar
         String cpf = owner.getCpf().replaceAll("[^0-9]", "");
 
-        //   valida o CPF
+        //  Valida o CPF antes de salvar
         if (!CpfValidator.isValidCPF(cpf)) {
-            return "CPF inválido";
+            return "CPF inválido!";
         }
 
-        //  verifica corretamente o telefone e o e-mail
-        if ((owner.getPhone() == null || owner.getPhone().isEmpty()) ||
-                (owner.getEmail() == null || owner.getEmail().isEmpty())) {
-            isIncomplete = true;
+        //  Verifica se já existe alguém com os mesmos dados
+        if (ownerRepository.existsByCpf(cpf)) {
+            return "Já existe um proprietário cadastrado com este CPF!";
+        }
+        if (owner.getEmail() != null && ownerRepository.existsByEmail(owner.getEmail())) {
+            return "Já existe um proprietário cadastrado com este E-mail!";
+        }
+        if (owner.getPhone() != null && ownerRepository.existsByPhone(owner.getPhone())) {
+            return "Já existe um proprietário cadastrado com este Telefone!";
         }
 
-        //Define o status de cadastro
+        //  Define status de cadastro baseado na presença de telefone e e-mail
+        boolean isIncomplete = owner.getPhone() == null || owner.getPhone().isEmpty() ||
+                owner.getEmail() == null || owner.getEmail().isEmpty();
         owner.setStatusRegister(isIncomplete ? "INCOMPLETO" : "COMPLETO");
 
 
-        this.ownerRepository.save(owner);
+        ownerRepository.save(owner);
 
         return isIncomplete
                 ? "Cadastro incompleto! Quando possível, atualize o cadastro com e-mail ou telefone."
@@ -57,20 +62,57 @@ public class OwnerService {
 
     public String update(Long id, Owner owner) {
         Optional<Owner> ownerOptional = ownerRepository.findById(id);
-        if (ownerOptional.isPresent()) {
-            Owner existingOwner = ownerOptional.get();
-            if (owner.getName() != null) existingOwner.setName(owner.getName());
-            if (owner.getCpf() != null) existingOwner.setCpf(owner.getCpf());
-            if (owner.getEmail() != null) existingOwner.setEmail(owner.getEmail());
-            if (owner.getPhone() != null) existingOwner.setPhone(owner.getPhone());
 
-            this.ownerRepository.save(existingOwner);
-
-            return "Propietaio atualizado com sucesso";
-
-        } else {
-            return "Propietatio com " +id + " não encontrado";
+        if (ownerOptional.isEmpty()) {
+            return "Proprietário com ID " + id + " não encontrado";
         }
+
+        Owner existingOwner = ownerOptional.get();
+
+        //  Verifica se está tentando atualizar para um CPF inválido
+        if (owner.getCpf() != null) {
+            String cpf = owner.getCpf().replaceAll("[^0-9]", ""); // Remove caracteres especiais
+            if (!CpfValidator.isValidCPF(cpf)) {
+                return "CPF inválido!";
+            }
+
+            //  Verifica se o novo CPF já existe em outro registro
+            if (!existingOwner.getCpf().equals(cpf) && ownerRepository.existsByCpf(cpf)) {
+                return "Já existe um proprietário cadastrado com este CPF!";
+            }
+
+            existingOwner.setCpf(cpf);
+        }
+
+        //  Verifica se o novo email já está em uso por outro registro
+        if (owner.getEmail() != null) {
+            if (!owner.getEmail().equals(existingOwner.getEmail()) && ownerRepository.existsByEmail(owner.getEmail())) {
+                return "Já existe um proprietário cadastrado com este E-mail!";
+            }
+            existingOwner.setEmail(owner.getEmail());
+        }
+
+        //  Verifica se o novo telefone já está em uso por outro registro
+        if (owner.getPhone() != null) {
+            if (!owner.getPhone().equals(existingOwner.getPhone()) && ownerRepository.existsByPhone(owner.getPhone())) {
+                return "Já existe um proprietário cadastrado com este Telefone!";
+            }
+            existingOwner.setPhone(owner.getPhone());
+        }
+
+        //  Atualiza outros dados
+        if (owner.getName() != null) existingOwner.setName(owner.getName());
+
+        //  Atualiza o status do cadastro com base na presença de telefone e e-mail
+        boolean isIncomplete = (existingOwner.getPhone() == null || existingOwner.getPhone().isEmpty()) ||
+                (existingOwner.getEmail() == null || existingOwner.getEmail().isEmpty());
+        existingOwner.setStatusRegister(isIncomplete ? "INCOMPLETO" : "COMPLETO");
+
+        ownerRepository.save(existingOwner);
+
+        return isIncomplete
+                ? "Cadastro atualizado, mas incompleto! Quando possível, atualize o cadastro com e-mail ou telefone."
+                : "Proprietário atualizado com sucesso!";
     }
 
     public String delete(Long id) {

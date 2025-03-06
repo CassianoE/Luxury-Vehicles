@@ -30,14 +30,15 @@ public class Owner {
 
     @NotBlank(message = "O CPF não pode ser vazio")
     @Size(min = 11, max = 11, message = "O CPF deve ter exatamente 11 caracteres")
+    @Column(unique = true, nullable = false)
     private String cpf;
 
-    @Nullable
     @Email(message = "O email deve ser válido")
+    @Column(unique = true)
     private String email;
 
-    @Nullable
     @Size(min = 10, max = 15, message = "O telefone deve ter entre 10 e 15 caracteres")
+    @Column(unique = true)
     private String phone;
 
     @OneToMany(mappedBy = "owner")
