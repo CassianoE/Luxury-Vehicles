@@ -18,13 +18,32 @@ public class OwnerService {
     private OwnerRepository ownerRepository;
 
     public String save(Owner owner) {
+
+        boolean isIncomplete = false;
+
+        //  Remove caracteres não numéricos do CPF
         String cpf = owner.getCpf().replaceAll("[^0-9]", "");
-        if (!CpfValidator.isValidCPF(owner.getCpf())) {
+
+        //   valida o CPF
+        if (!CpfValidator.isValidCPF(cpf)) {
             return "CPF inválido";
-        }else {
-            this.ownerRepository.save(owner);
-            return "Propietario Criado com sucesso";
         }
+
+        //  verifica corretamente o telefone e o e-mail
+        if ((owner.getPhone() == null || owner.getPhone().isEmpty()) ||
+                (owner.getEmail() == null || owner.getEmail().isEmpty())) {
+            isIncomplete = true;
+        }
+
+        //Define o status de cadastro
+        owner.setStatusRegister(isIncomplete ? "INCOMPLETO" : "COMPLETO");
+
+
+        this.ownerRepository.save(owner);
+
+        return isIncomplete
+                ? "Cadastro incompleto! Quando possível, atualize o cadastro com e-mail ou telefone."
+                : "Proprietário criado com sucesso!";
     }
 
     public Owner findById(Long id) {

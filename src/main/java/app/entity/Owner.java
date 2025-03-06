@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.annotation.Nullable;
 
 import java.util.List;
 
@@ -31,11 +32,11 @@ public class Owner {
     @Size(min = 11, max = 11, message = "O CPF deve ter exatamente 11 caracteres")
     private String cpf;
 
-    @NotBlank(message = "O email não pode ser vazio")
+    @Nullable
     @Email(message = "O email deve ser válido")
     private String email;
 
-    @NotBlank(message = "O telefone não pode ser vazio")
+    @Nullable
     @Size(min = 10, max = 15, message = "O telefone deve ter entre 10 e 15 caracteres")
     private String phone;
 
@@ -55,5 +56,5 @@ public class Owner {
     @JsonIgnoreProperties("owner")
     private List<Boat> boats;
 
-
+    private String statusRegister;
 }
