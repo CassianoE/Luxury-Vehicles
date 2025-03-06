@@ -18,22 +18,22 @@ public class BoatController {
     private BoatService boatService;
 
     @PostMapping("/save")
-    public ResponseEntity<Boat> save(@Valid @RequestBody Boat boat) {
+    public ResponseEntity<?> save(@Valid @RequestBody Boat boat) {
         try {
-            Boat newBoat = boatService.save(boat);
+            String newBoat = boatService.save(boat);
             return new ResponseEntity<>(newBoat, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<Boat> findById(@PathVariable Long id) {
+    public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
             Boat boat = boatService.findById(id);
             return new ResponseEntity<>(boat, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -48,51 +48,52 @@ public class BoatController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Boat> update(@Valid @RequestBody Boat boat, @PathVariable Long id) {
+    public ResponseEntity<?> update(@Valid @RequestBody Boat boat, @PathVariable Long id) {
         try {
-            Boat updatedBoat = boatService.update(id, boat);
+            String updatedBoat = boatService.update(id, boat);
             return new ResponseEntity<>(updatedBoat, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<String> delete(@PathVariable Long id) {
         try {
-            boatService.delete(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            String deleteBoat = this.boatService.delete(id);
+            return new ResponseEntity<>(deleteBoat,HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
         }
     }
+
     @GetMapping("/findByModel")
-    public ResponseEntity<List<Boat>> findByModel(@RequestParam String model) {
+    public ResponseEntity<?> findByModel(@RequestParam String model) {
         try {
             List<Boat> boatList = boatService.findByModel(model);
             return new ResponseEntity<>(boatList, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
     @GetMapping("/findByYear")
-    public ResponseEntity<List<Boat>> findByYear(@RequestParam int year) {
+    public ResponseEntity<?> findByYear(@RequestParam int year) {
         try {
             List<Boat> boatList = boatService.findByYear(year);
-            return ResponseEntity.ok(boatList);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return new ResponseEntity<>(boatList, HttpStatus.OK);
+        }  catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
+
     @GetMapping("/findByLengthGreaterThanEqual")
-    public  ResponseEntity<List<Boat>> findByLengthGreaterThanEqual(@RequestParam int length) {
+    public  ResponseEntity<?> findByLengthGreaterThanEqual(@RequestParam int length) {
         try {
             List<Boat> boatList = this.boatService.findByLengthGreaterThanEqual(length);
             return new ResponseEntity<>(boatList, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }

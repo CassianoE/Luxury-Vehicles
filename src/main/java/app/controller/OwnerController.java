@@ -19,22 +19,22 @@ public class OwnerController {
     private OwnerService ownerService;
 
     @PostMapping("/save")
-    public ResponseEntity<Owner> save(@Valid @RequestBody Owner owner) {
+    public ResponseEntity<String> save(@Valid @RequestBody Owner owner) {
         try {
-            Owner newOwner = ownerService.save(owner);
-            return new ResponseEntity<>(newOwner, HttpStatus.CREATED);
+            String newOwner = ownerService.save(owner);
+            return new ResponseEntity<>(newOwner, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<Owner> findById(@PathVariable Long id) {
+    public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
             Owner owner = ownerService.findById(id);
             return new ResponseEntity<>(owner, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -49,9 +49,9 @@ public class OwnerController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Owner> update(@Valid @RequestBody Owner owner, @PathVariable Long id) {
+    public ResponseEntity<String> update(@Valid @RequestBody Owner owner, @PathVariable Long id) {
         try {
-            Owner updatedOwner = ownerService.update(id, owner);
+            String updatedOwner = ownerService.update(id, owner);
             return new ResponseEntity<>(updatedOwner, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -59,10 +59,10 @@ public class OwnerController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<String> delete(@PathVariable Long id) {
         try {
-            ownerService.delete(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            String deleteOwner = this.ownerService.delete(id);
+            return new ResponseEntity<>(deleteOwner, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
@@ -70,32 +70,23 @@ public class OwnerController {
 
 
     @GetMapping("/findByName")
-    public ResponseEntity<List<Owner>> findByName(@RequestParam String name) {
+    public ResponseEntity<?> findByName(@RequestParam String name) {
         try {
             List<Owner> ownerList = ownerService.findByName(name);
             return new ResponseEntity<>(ownerList, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/findByEmail")
-    public ResponseEntity<List<Owner>> findByEmail(@RequestParam String email) {
+    public ResponseEntity<?> findByEmail(@RequestParam String email) {
         try {
             List<Owner> ownerList = ownerService.findByEmail(email);
                 return new ResponseEntity<>(ownerList, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
 
-    @GetMapping("/findByCpf/{cpf}")
-    public ResponseEntity<Owner> findByCpf(@PathVariable String cpf) {
-        try {
-            Owner owner = ownerService.findByCpf(cpf);
-            return new ResponseEntity<>(owner, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-    }
 }

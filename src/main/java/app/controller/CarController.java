@@ -20,22 +20,22 @@ public class CarController {
     private CarService carService;
 
     @PostMapping("/save")
-    public ResponseEntity<Car> save(@Valid @RequestBody Car car) {
+    public ResponseEntity<?> save(@Valid @RequestBody Car car) {
       try {
-          Car newCar = carService.save(car);
+          String newCar = carService.save(car);
           return new ResponseEntity<>(newCar,HttpStatus.CREATED);
       } catch (Exception e) {
-          return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+          return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
       }
     }
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<Car> findById(@PathVariable Long id) {
+    public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
             Car car = carService.findById(id);
             return new ResponseEntity<>(car, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -50,42 +50,42 @@ public class CarController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Car> update(@Valid @RequestBody Car car, @PathVariable Long id) {
+    public ResponseEntity<?> update(@Valid @RequestBody Car car, @PathVariable Long id) {
         try {
-            Car updatedCar = carService.update(id, car);
+            String updatedCar = carService.update(id, car);
             return new ResponseEntity<>(updatedCar, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<String> delete(@PathVariable Long id) {
         try {
-            carService.delete(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            String deleteCar = this.carService.delete(id);
+            return new ResponseEntity<>(deleteCar,HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping("/findByModel")
-    public ResponseEntity<List<Car>> findByModel(@RequestParam String model) {
+    public ResponseEntity<?> findByModel(@RequestParam String model) {
         try {
             List<Car> carList = carService.findByModel(model);
             return new ResponseEntity<>(carList, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/findByFuelType")
-    public ResponseEntity<List<Car>> findByFuelType(@RequestParam String fuelType) {
+    public ResponseEntity<?> findByFuelType(@RequestParam String fuelType) {
         try {
             List<Car> carList = carService.findByFuelType(fuelType);
             return new ResponseEntity<>(carList, HttpStatus.OK);
         }  catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     }

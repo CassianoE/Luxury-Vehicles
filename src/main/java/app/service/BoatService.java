@@ -2,6 +2,7 @@ package app.service;
 
 import app.entity.Boat;
 import app.entity.Owner;
+import app.exeption.ResourceNotFoundException;
 import app.messages.ErrorMessages;
 import app.repository.BoatRepository;
 import app.repository.OwnerRepository;
@@ -20,25 +21,26 @@ public class BoatService {
     @Autowired
     private OwnerRepository ownerRepository;
 
-    public Boat save(Boat boat) {
+    public String save(Boat boat) {
         if (boat.getOwner() != null && boat.getOwner().getId() != null) {
             Owner ownerFromDb = ownerRepository.findById(boat.getOwner().getId())
                     .orElseThrow(() -> new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + boat.getOwner().getId()));
             boat.setOwner(ownerFromDb);
         }
-        return boatRepository.save(boat);
+        this.boatRepository.save(boat);
+        return "Barco criado com sucesso";
     }
 
     public Boat findById(Long id) {
-        Optional<Boat> boatOptional = boatRepository.findById(id);
-        return boatOptional.orElseThrow(() -> new RuntimeException(ErrorMessages.BOAT_NOT_FOUND + id));
+        return boatRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Barco com o ID " + id + " não foi encontrado"));
     }
 
     public List<Boat> findAll() {
         return boatRepository.findAll();
     }
 
-    public Boat update(Long id, Boat boat) {
+    public String update(Long id, Boat boat) {
         Optional<Boat> boatOptional = boatRepository.findById(id);
         if (boatOptional.isPresent()) {
             Boat existingBoat = boatOptional.get();
@@ -48,25 +50,40 @@ public class BoatService {
             if (boat.getPrice() != 0) existingBoat.setPrice(boat.getPrice());
             if (boat.getLength() != 0) existingBoat.setLength(boat.getLength());
             if (boat.getHullType() != null) existingBoat.setHullType(boat.getHullType());
-            if (boat.getOwner() != null) existingBoat.setOwner(boat.getOwner());
-            return boatRepository.save(existingBoat);
+            if (boat.getOwner() != null) {
+                if (boat.getOwner().getId() == null) {
+                    return "O ID do proprietário não pode ser nulo";
+                }
+
+                Optional<Owner> ownerOptional = ownerRepository.findById(boat.getOwner().getId());
+                if (ownerOptional.isEmpty()) {
+                    return "Proprietário com ID " + boat.getOwner().getId() + " não encontrado";
+                }
+
+                existingBoat.setOwner(ownerOptional.get());
+            }
+            this.boatRepository.save(existingBoat);
+            return "Barco atualizado com sucesso";
+
         } else {
-            throw new RuntimeException(ErrorMessages.BOAT_NOT_FOUND + id);
+            return "Barco com o ID " + id + " não encontrado";
         }
     }
 
-    public void delete(Long id) {
-        if (boatRepository.existsById(id)) {
-            boatRepository.deleteById(id);
+    public String delete(Long id) {
+        Optional <Boat> boatOptional = boatRepository.findById(id);
+        if (boatOptional.isPresent()) {
+            this.boatRepository.deleteById(id);
+            return "Barco deletado com sucesso";
         } else {
-            throw new RuntimeException(ErrorMessages.BOAT_NOT_FOUND + id);
+            return "Barco com o ID " + id + " não encontrado";
         }
     }
 
     public List<Boat> findByModel(String model) {
     List <Boat> boatList = boatRepository.findByModel(model);
     if (boatList.isEmpty()) {
-        throw new RuntimeException(ErrorMessages.BOAT_NOT_FOUND + model);
+        throw new RuntimeException("Nenhum barco encontrado com o modelo" + model);
     }
         return this.boatRepository.findByModel(model);
     }
@@ -76,13 +93,13 @@ public class BoatService {
         if (boatList.isEmpty()) {
             throw new RuntimeException("Nenhum barco encontrado para o ano " + year);
         }
-        return boatList;
+        return this.boatRepository.findByYear(year);
     }
 
     public List<Boat> findByLengthGreaterThanEqual(int length) {
         List <Boat> boatList = boatRepository.findByLengthGreaterThanEqual(length);
         if (boatList.isEmpty()) {
-            throw new RuntimeException(ErrorMessages.BOAT_NOT_FOUND + length);
+            throw new RuntimeException("Nenhum barco encontrado com o " + length);
         }
         return this.boatRepository.findByLengthGreaterThanEqual(length);
     }

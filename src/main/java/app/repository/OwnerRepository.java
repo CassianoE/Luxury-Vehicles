@@ -13,7 +13,4 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
     List<Owner> findByName(String name);
     List<Owner> findByEmail(String email);
 
-    @Query("SELECT o FROM Owner o WHERE o.cpf = :cpf")
-    Optional<Owner> findByCpf(@Param("cpf") String cpf);
-
 }

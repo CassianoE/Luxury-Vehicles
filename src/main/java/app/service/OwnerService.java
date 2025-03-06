@@ -1,6 +1,7 @@
 package app.service;
 
 import app.entity.Owner;
+import app.exeption.ResourceNotFoundException;
 import app.messages.ErrorMessages;
 import app.repository.OwnerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,31 +16,23 @@ public class OwnerService {
     @Autowired
     private OwnerRepository ownerRepository;
 
-    public Owner save(Owner owner) {
+    public String save(Owner owner) {
+        
+        this.ownerRepository.save(owner);
 
-        boolean isIncomplete = false;
-
-        if (owner.getPhone() == null || owner.getPhone().isEmpty() ||
-            owner.getCpf() == null || owner.getCpf().isEmpty() ||
-            owner.getName() == null || owner.getName().isEmpty()) {
-            isIncomplete = true;
-        }
-
-        owner.setStatusRegister(isIncomplete ? "INCOMPLETO" : "COMPLETO");
-
-        return ownerRepository.save(owner);
+        return "Propietario Criado com sucesso";
     }
 
     public Owner findById(Long id) {
-        Optional<Owner> ownerOptional = ownerRepository.findById(id);
-        return ownerOptional.orElseThrow(() -> new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + id));
-    }
+    return ownerRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Proprietário com ID " + id + " não foi encontrado"));
+}
 
     public List<Owner> findAll() {
         return ownerRepository.findAll();
     }
 
-    public Owner update(Long id, Owner owner) {
+    public String update(Long id, Owner owner) {
         Optional<Owner> ownerOptional = ownerRepository.findById(id);
         if (ownerOptional.isPresent()) {
             Owner existingOwner = ownerOptional.get();
@@ -47,24 +40,30 @@ public class OwnerService {
             if (owner.getCpf() != null) existingOwner.setCpf(owner.getCpf());
             if (owner.getEmail() != null) existingOwner.setEmail(owner.getEmail());
             if (owner.getPhone() != null) existingOwner.setPhone(owner.getPhone());
-            return ownerRepository.save(existingOwner);
+
+            this.ownerRepository.save(existingOwner);
+
+            return "Propietaio atualizado com sucesso";
+
         } else {
-            throw new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + id);
+            return "Propietatio com " +id + " não encontrado";
         }
     }
 
-    public void delete(Long id) {
-        if (ownerRepository.existsById(id)) {
-            ownerRepository.deleteById(id);
-        } else {
-            throw new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + id);
-        }
+    public String delete(Long id) {
+    Optional<Owner> ownerOptional = ownerRepository.findById(id);
+    if (ownerOptional.isPresent()) {
+        this.ownerRepository.deleteById(id);
+        return "Propietario deletado com sucesso";
+    } else {
+        return "Propietario com " + id + " não encontrado";
     }
+}
 
     public List<Owner> findByName(String name) {
         List <Owner> ownerList = ownerRepository.findByName(name);
         if (ownerList.isEmpty()) {
-            throw new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + name);
+            throw new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + name + " name");
         }
         return this.ownerRepository.findByName(name);
     }
@@ -72,17 +71,10 @@ public class OwnerService {
     public List<Owner> findByEmail(String email) {
         List <Owner> ownerList = ownerRepository.findByEmail(email);
         if (ownerList.isEmpty()) {
-            throw new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + email);
+            throw new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + email + " email");
         }
         return this.ownerRepository.findByEmail(email);
     }
-
-    public Owner findByCpf(String cpf) {
-        return ownerRepository.findByCpf(cpf)
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + cpf));
-    }
-
+    
 
 }

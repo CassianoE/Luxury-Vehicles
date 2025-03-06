@@ -56,7 +56,4 @@ public class Owner {
     private List<Boat> boats;
 
 
-    private String statusRegister;
-
-
 }

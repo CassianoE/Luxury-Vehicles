@@ -2,9 +2,12 @@ package app.service;
 
 import app.entity.Boat;
 import app.entity.Car;
+import app.entity.Event;
 import app.entity.Owner;
+import app.exeption.ResourceNotFoundException;
 import app.messages.ErrorMessages;
 import app.repository.CarRepository;
+import app.repository.EventRepository;
 import app.repository.OwnerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,25 +24,29 @@ import java.util.Optional;
     @Autowired
     private OwnerRepository ownerRepository;
 
-    public Car save(Car car) {
+    @Autowired
+    private EventRepository eventRepository;
+
+    public String save(Car car) {
         if (car.getOwner() != null && car.getOwner().getId() != null) {
             Owner ownerFromDb = ownerRepository.findById(car.getOwner().getId())
                     .orElseThrow(() -> new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + car.getOwner().getId()));
             car.setOwner(ownerFromDb);
         }
-        return carRepository.save(car);
+        this.carRepository.save(car);
+        return "Carro criado com sucesso";
     }
 
     public Car findById(Long id) {
-        Optional<Car> carOptional = carRepository.findById(id);
-        return carOptional.orElseThrow(() -> new RuntimeException(ErrorMessages.CAR_NOT_FOUND + id));
+        return carRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Carro com o ID " + id + " não foi encontrado"));
     }
 
     public List<Car> findAll() {
         return carRepository.findAll();
     }
 
-    public Car update(Long id, Car car) {
+    public String update(Long id, Car car) {
         Optional<Car> carOptional = carRepository.findById(id);
         if (carOptional.isPresent()) {
             Car existingCar = carOptional.get();
@@ -49,18 +56,38 @@ import java.util.Optional;
             if (car.getPrice() != 0) existingCar.setPrice(car.getPrice());
             if (car.getHorsepower() != 0) existingCar.setHorsepower(car.getHorsepower());
             if (car.getFuelType() != null) existingCar.setFuelType(car.getFuelType());
-            if (car.getOwner() != null) existingCar.setOwner(car.getOwner());
-            return carRepository.save(existingCar);
+            if (car.getOwner() != null) {
+                if (car.getOwner().getId() == null) {
+                    return "O ID do proprietário não pode ser nulo";
+                }
+
+                Optional<Owner> ownerOptional = ownerRepository.findById(car.getOwner().getId());
+                if (ownerOptional.isEmpty()) {
+                    return "Proprietário com ID " + car.getOwner().getId() + " não encontrado";
+                }
+
+                existingCar.setOwner(ownerOptional.get());
+            }
+            this.carRepository.save(existingCar);
+            return "Carro atualizado com sucesso";
         } else {
-            throw new RuntimeException(ErrorMessages.CAR_NOT_FOUND + id);
+            return "Carro com ID " + id + " não encontrado";
         }
     }
 
-    public void delete(Long id) {
-        if (carRepository.existsById(id)) {
-            carRepository.deleteById(id);
-        } else {
-            throw new RuntimeException(ErrorMessages.CAR_NOT_FOUND + id);
+    public String delete(Long id) {
+        Optional <Car> carOptional = carRepository.findById(id);
+        Car car = carOptional.get();
+        List<Event> events = eventRepository.findByCarsContains(car);
+        if (!events.isEmpty()) {
+            return "O carro está associado ao evento ID: " + events.get(0).getId() +
+                    ". Remova-o do evento antes de excluir.";
+        }
+        if(carOptional.isPresent()){
+        this.carRepository.deleteById(id);
+        return "Carro deletado com sucesso";
+    } else {
+            return "Carro com ID " + id + " não encontrado";
         }
     }
 

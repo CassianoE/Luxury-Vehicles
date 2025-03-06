@@ -18,22 +18,22 @@ public class MotorcycleController {
     private MotorcycleService motorcycleService;
 
     @PostMapping("/save")
-    public ResponseEntity<Motorcycle> save(@Valid @RequestBody Motorcycle motorcycle) {
+    public ResponseEntity<?> save(@Valid @RequestBody Motorcycle motorcycle) {
         try {
-            Motorcycle newMotorcycle = motorcycleService.save(motorcycle);
+            String newMotorcycle = motorcycleService.save(motorcycle);
             return new ResponseEntity<>(newMotorcycle, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<Motorcycle> findById(@PathVariable Long id) {
+    public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
             Motorcycle motorcycle = motorcycleService.findById(id);
             return new ResponseEntity<>(motorcycle, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -48,42 +48,42 @@ public class MotorcycleController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Motorcycle> update(@Valid @RequestBody Motorcycle motorcycle, @PathVariable Long id) {
+    public ResponseEntity<?> update(@Valid @RequestBody Motorcycle motorcycle, @PathVariable Long id) {
         try {
-            Motorcycle updatedMotorcycle = motorcycleService.update(id, motorcycle);
+            String updatedMotorcycle = motorcycleService.update(id, motorcycle);
             return new ResponseEntity<>(updatedMotorcycle, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<String> delete(@PathVariable Long id) {
         try {
-            motorcycleService.delete(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            String deleteMotocycle = this.motorcycleService.delete(id);
+            return new ResponseEntity<>(deleteMotocycle,HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping("/findByModel")
-    public ResponseEntity<List<Motorcycle>> findByModel(@RequestParam String model) {
+    public ResponseEntity<?> findByModel(@RequestParam String model) {
         try {
             List<Motorcycle> motorcycleList = motorcycleService.findByModel(model);
             return new ResponseEntity<>(motorcycleList, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping("/findByBikeType")
-    public ResponseEntity<List<Motorcycle>> findByBikeType(@RequestParam String bikeType) {
+    public ResponseEntity<?> findByBikeType(@RequestParam String bikeType) {
         try {
             List<Motorcycle> motorcycleList = motorcycleService.findByBikeType(bikeType);
             return new ResponseEntity<>(motorcycleList, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 }

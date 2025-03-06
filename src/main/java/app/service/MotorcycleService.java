@@ -20,25 +20,27 @@ public class MotorcycleService {
     @Autowired
     private OwnerRepository ownerRepository;
 
-    public Motorcycle save(Motorcycle motorcycle) {
+    public String save(Motorcycle motorcycle) {
         if (motorcycle.getOwner() != null && motorcycle.getOwner().getId() != null) {
             Owner ownerFromDb = ownerRepository.findById(motorcycle.getOwner().getId())
                     .orElseThrow(() -> new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + motorcycle.getOwner().getId()));
             motorcycle.setOwner(ownerFromDb);
         }
-        return motorcycleRepository.save(motorcycle);
+        this.motorcycleRepository.save(motorcycle);
+
+        return "Moto criada com sucesso";
     }
 
     public Motorcycle findById(Long id) {
-        Optional<Motorcycle> motorcycleOptional = motorcycleRepository.findById(id);
-        return motorcycleOptional.orElseThrow(() -> new RuntimeException(ErrorMessages.MOTORCYCLE_NOT_FOUND + id));
+        return motorcycleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException(ErrorMessages.MOTORCYCLE_NOT_FOUND + id));
     }
 
     public List<Motorcycle> findAll() {
         return motorcycleRepository.findAll();
     }
 
-    public Motorcycle update(Long id, Motorcycle motorcycle) {
+    public String update(Long id, Motorcycle motorcycle) {
         Optional<Motorcycle> motorcycleOptional = motorcycleRepository.findById(id);
         if (motorcycleOptional.isPresent()) {
             Motorcycle existingMotorcycle = motorcycleOptional.get();
@@ -48,19 +50,33 @@ public class MotorcycleService {
             if (motorcycle.getPrice() != 0) existingMotorcycle.setPrice(motorcycle.getPrice());
             if (motorcycle.getEngineDisplacement() != 0) existingMotorcycle.setEngineDisplacement(motorcycle.getEngineDisplacement());
             if (motorcycle.getBikeType() != null) existingMotorcycle.setBikeType(motorcycle.getBikeType());
-            if (motorcycle.getOwner() != null) existingMotorcycle.setOwner(motorcycle.getOwner());
-            return motorcycleRepository.save(existingMotorcycle);
+            if (motorcycle.getOwner() != null) {
+                if (motorcycle.getOwner().getId() == null) {
+                    return "O ID do proprietário não pode ser nulo";
+                }
+
+                Optional<Owner> ownerOptional = ownerRepository.findById(motorcycle.getOwner().getId());
+                if (ownerOptional.isEmpty()) {
+                    return "Proprietário com ID " + motorcycle.getOwner().getId() + " não encontrado";
+                }
+
+                existingMotorcycle.setOwner(ownerOptional.get());
+            }
+            this.motorcycleRepository.save(existingMotorcycle);
+            return "Moto atualizado com sucesso";
         } else {
-            throw new RuntimeException(ErrorMessages.MOTORCYCLE_NOT_FOUND + id);
+            return "Moto com ID " + id + " não encontrado";
         }
     }
 
-    public void delete(Long id) {
-        if (motorcycleRepository.existsById(id)) {
-            motorcycleRepository.deleteById(id);
-        } else {
-            throw new RuntimeException(ErrorMessages.MOTORCYCLE_NOT_FOUND + id);
-        }
+    public String delete(Long id) {
+       Optional <Motorcycle> motorcycleOptional = motorcycleRepository.findById(id);
+         if (motorcycleOptional.isPresent()) {
+              this.motorcycleRepository.deleteById(id);
+              return "Moto deletada com sucesso";
+         } else {
+              return "Moto com ID " + id + " não encontrada";
+         }
     }
 
     public List<Motorcycle> findByModel(String model) {

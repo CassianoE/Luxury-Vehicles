@@ -20,25 +20,27 @@ public class PlaneService {
     @Autowired
     private OwnerRepository ownerRepository;
 
-    public Plane save(Plane plane) {
+    public String save(Plane plane) {
         if (plane.getOwner() != null && plane.getOwner().getId() != null) {
             Owner ownerFromDb = ownerRepository.findById(plane.getOwner().getId())
                     .orElseThrow(() -> new RuntimeException(ErrorMessages.OWNER_NOT_FOUND + plane.getOwner().getId()));
             plane.setOwner(ownerFromDb);
         }
-        return planeRepository.save(plane);
+        this.planeRepository.save(plane);
+
+        return "Avião criado com sucesso";
     }
 
     public Plane findById(Long id) {
-        Optional<Plane> planeOptional = planeRepository.findById(id);
-        return planeOptional.orElseThrow(() -> new RuntimeException(ErrorMessages.PLANE_NOT_FOUND + id));
+       return planeRepository.findById(id)
+         .orElseThrow(() -> new RuntimeException(ErrorMessages.PLANE_NOT_FOUND + id));
     }
 
     public List<Plane> findAll() {
         return planeRepository.findAll();
     }
 
-    public Plane update(Long id, Plane plane) {
+    public String update(Long id, Plane plane) {
         Optional<Plane> planeOptional = planeRepository.findById(id);
         if (planeOptional.isPresent()) {
             Plane existingPlane = planeOptional.get();
@@ -48,25 +50,40 @@ public class PlaneService {
             if (plane.getPrice() != 0) existingPlane.setPrice(plane.getPrice());
             if (plane.getMaxAltitude() != 0) existingPlane.setMaxAltitude(plane.getMaxAltitude());
             if (plane.getEngineCount() != 0) existingPlane.setEngineCount(plane.getEngineCount());
-            if (plane.getOwner() != null) existingPlane.setOwner(plane.getOwner());
-            return planeRepository.save(existingPlane);
+            if (plane.getOwner() != null) {
+                if (plane.getOwner().getId() == null) {
+                    return "O ID do proprietário não pode ser nulo";
+                }
+
+                Optional<Owner> ownerOptional = ownerRepository.findById(plane.getOwner().getId());
+                if (ownerOptional.isEmpty()) {
+                    return "Proprietário com ID " + plane.getOwner().getId() + " não encontrado";
+                }
+
+                existingPlane.setOwner(ownerOptional.get());
+            }
+            this.planeRepository.save(existingPlane);
+            return "Avião atualizado com sucesso";
+
         } else {
-            throw new RuntimeException(ErrorMessages.PLANE_NOT_FOUND + id);
+            return "Avião com o ID " + id + " não encontrado";
         }
     }
 
-    public void delete(Long id) {
-        if (planeRepository.existsById(id)) {
-            planeRepository.deleteById(id);
+    public String delete(Long id) {
+        Optional <Plane> planeOptional = planeRepository.findById(id);
+        if (planeOptional.isPresent()) {
+            this.planeRepository.deleteById(id);
+            return "Avião deletado com sucesso";
         } else {
-            throw new RuntimeException(ErrorMessages.PLANE_NOT_FOUND + id);
+            return "Avião com o ID " + id + " não encontrado";
         }
     }
 
     public List<Plane> findByModel(String model) {
         List <Plane> planeList = planeRepository.findByModel(model);
         if (planeList.isEmpty()) {
-            throw new RuntimeException(ErrorMessages.PLANE_NOT_FOUND + model);
+            throw new RuntimeException("Nenhum Avião encontrado com o modelo "+ model);
         }
         return this.planeRepository.findByModel(model);
     }
@@ -74,7 +91,7 @@ public class PlaneService {
     public List<Plane> findByEngineCount(int engineCount) {
         List <Plane> planeList = planeRepository.findByEngineCount(engineCount);
         if (planeList.isEmpty()) {
-            throw new RuntimeException(ErrorMessages.PLANE_NOT_FOUND + engineCount);
+            throw new RuntimeException("Nenhum Avião encontrado com " + engineCount + " motores");
         }
         return this.planeRepository.findByEngineCount(engineCount);
     }
