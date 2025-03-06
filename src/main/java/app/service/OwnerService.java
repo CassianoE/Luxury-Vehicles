@@ -4,6 +4,7 @@ import app.entity.Owner;
 import app.exeption.ResourceNotFoundException;
 import app.messages.ErrorMessages;
 import app.repository.OwnerRepository;
+import app.utils.CpfValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +18,13 @@ public class OwnerService {
     private OwnerRepository ownerRepository;
 
     public String save(Owner owner) {
-        
-        this.ownerRepository.save(owner);
-
-        return "Propietario Criado com sucesso";
+        String cpf = owner.getCpf().replaceAll("[^0-9]", "");
+        if (!CpfValidator.isValidCPF(owner.getCpf())) {
+            return "CPF inválido";
+        }else {
+            this.ownerRepository.save(owner);
+            return "Propietario Criado com sucesso";
+        }
     }
 
     public Owner findById(Long id) {
